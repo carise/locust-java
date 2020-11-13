@@ -1,6 +1,6 @@
 package locust;
 
-public class LocustMain {
+public final class LocustMain {
 
   public static void main(String[] args) {
     // Arg parsing for -i and -o
