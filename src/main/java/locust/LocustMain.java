@@ -16,21 +16,42 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Correlate the changes within a git initial/ending ref with the changes' source tree.
+ *
+ * <p>Locust will report changes correlated to the values of {@link ContextType}.
+ */
 public final class LocustMain {
 
   private static final class ChangeScope {
     private final String idNodeName;
     private final int startLine;
     private final int endLine;
+    // TODO: symbols? https://github.com/bugout-dev/locust/blob/main/locust/parse.py#L44
 
     ChangeScope(String idNodeName, int startLine, int endLine) {
       this.idNodeName = idNodeName;
       this.startLine = startLine;
       this.endLine = endLine;
+    }
+  }
+
+  enum ContextType {
+    UNKNOWN("unknown"),
+    CLASS_DEF("class"),
+    METHOD_DEF("method"),
+    ENUM_DEF("enum"),
+    DEPENDENCY("dependency"),
+    // Catch-all for attributes, values, etc.
+    USAGE("usage");
+
+    private final String name;
+
+    ContextType(String name) {
+      this.name = name;
     }
   }
 
@@ -47,24 +68,28 @@ public final class LocustMain {
     parser.merge(inputJson, gitResultBuilder);
     Git.GitResult gitResult = gitResultBuilder.build();
 
-    System.out.println(gitResult);
-
-    calculateChanges(getDefinitionsByPatch(gitResult));
+    List<Parse.LocustChange> changes =
+        calculateChanges(gitResult, getDefinitionsByPatch(gitResult));
   }
 
-  private static List getDefinitionsByPatch(
-      Git.GitResult gitResult) {
+  /** Build a list of all the changes in a GitResult, paired by patch and its changes. */
+  private static List getDefinitionsByPatch(Git.GitResult gitResult) {
     return gitResult.getPatchesList().stream()
         .filter(p -> p.getNewFile().toLowerCase().endsWith(".java"))
         .map(p -> new Pair(p, definitionsInPatch(p)))
         .collect(Collectors.toUnmodifiableList());
   }
 
+  /**
+   * Build a list of the changes in a git patch.
+   *
+   * <p>The patch directly correlates to a single Java file.
+   */
   private static List<Parse.RawDefinition> definitionsInPatch(Git.PatchInfo patch) {
     String source = patch.getNewSource();
 
-    if (source == null) {
-      return Collections.unmodifiableList(List.of());
+    if (source == null || source.isEmpty()) {
+      return List.of();
     }
 
     List<Parse.RawDefinition> definitions = new ArrayList<>();
@@ -74,6 +99,7 @@ public final class LocustMain {
       CompilationUnit compilationUnit = StaticJavaParser.parse(new File(patch.getNewFile()));
       VoidVisitor<?> methodNameVisitor = new MethodNamePrinter();
       methodNameVisitor.visit(compilationUnit, null);
+      // TODO
     } catch (FileNotFoundException e) {
       e.printStackTrace();
       throw new RuntimeException("failed to parse file due to " + e.getMessage());
@@ -82,7 +108,8 @@ public final class LocustMain {
     return null;
   }
 
-  private static class MethodNamePrinter extends VoidVisitorAdapter<Void> {
+  /** Temporary: visitor that prints the method names when visited. */
+  private static final class MethodNamePrinter extends VoidVisitorAdapter<Void> {
     @Override
     public void visit(MethodDeclaration methodDecl, Void arg) {
       super.visit(methodDecl, arg);
@@ -90,8 +117,25 @@ public final class LocustMain {
     }
   }
 
+  /** Build the locust metadata for all of the git changes. */
   private static List<Parse.LocustChange> calculateChanges(
+      Git.GitResult gitResult,
       List<Pair<Git.PatchInfo, List<Parse.RawDefinition>>> definitionsByPatch) {
-    return Collections.unmodifiableList(List.of());
+    List<Parse.LocustChange> changes = new ArrayList<>();
+    for (Pair<Git.PatchInfo, List<Parse.RawDefinition>> patchAndDef : definitionsByPatch) {
+      Git.PatchInfo patch = patchAndDef.a;
+      List<Parse.RawDefinition> definitions = patchAndDef.b;
+      Pair<Git.PatchInfo, Parse.LocustChange> change =
+          locustChangesInPatch(patch, definitions, gitResult);
+      changes.add(change.b);
+    }
+    return changes;
+  }
+
+  /** Builds the locust metadata for a single git patch. */
+  private static Pair<Git.PatchInfo, Parse.LocustChange> locustChangesInPatch(
+      Git.PatchInfo patch, List<Parse.RawDefinition> definitions, Git.GitResult gitResult) {
+    // TODO
+    return new Pair(patch, Parse.LocustChange.getDefaultInstance());
   }
 }
