@@ -26,3 +26,5 @@ target/
 
 # IDE
 .idea/
+
+dependency-reduced-pom.xml
