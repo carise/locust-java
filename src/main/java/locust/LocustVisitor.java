@@ -12,10 +12,13 @@ import locust.parse.Parse;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
+/** A Java parser with visitation logic. */
 final class LocustVisitor extends VoidVisitorAdapter<Void> {
   private final List<Parse.RawDefinition> definitions;
-  private final List<ChangeScope> scope;
+  private List<ChangeScope> scope;
 
   LocustVisitor() {
     super();
@@ -66,19 +69,36 @@ final class LocustVisitor extends VoidVisitorAdapter<Void> {
   }
 
   void processDeclaration(Node node, String nodeName, ContextType changeType) {
-    Parse.DefinitionParent defParent =
-        Parse.DefinitionParent.newBuilder().setLine(0).setName("undefined").build();
     Range nodeRange = node.getRange().get();
-    Parse.RawDefinition def =
+
+    // deduce parent
+    scope =
+        scope.stream().filter(s -> s.endLine > nodeRange.begin.line).collect(Collectors.toList());
+    Optional<Parse.DefinitionParent> defParent = Optional.empty();
+    if (!scope.isEmpty()) {
+      ChangeScope changeScopeParent = scope.get(scope.size() - 1);
+      defParent =
+          Optional.of(
+              Parse.DefinitionParent.newBuilder()
+                  .setName(changeScopeParent.idNodeName)
+                  .setLine(changeScopeParent.startLine)
+                  .build());
+    }
+    if (!defParent.isEmpty()) {
+      nodeName = String.format("%s.%s", defParent.get().getName(), nodeName);
+    }
+
+    // Then build the definition
+    Parse.RawDefinition.Builder def =
         Parse.RawDefinition.newBuilder()
             .setName(nodeName)
             .setChangeType(changeType.getType())
             .setLine(nodeRange.begin.line)
             .setOffset(nodeRange.begin.column)
             .setEndLine(nodeRange.end.line)
-            .setEndOffset(nodeRange.end.column)
-            .setParent(defParent)
-            .build();
-    definitions.add(def);
+            .setEndOffset(nodeRange.end.column);
+    defParent.ifPresent(p -> def.setParent(p));
+
+    definitions.add(def.build());
   }
 }

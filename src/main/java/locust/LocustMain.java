@@ -36,10 +36,8 @@ public final class LocustMain {
     String output = args[2];
     String outputFilename = args[3];
 
-    System.out.println("input file: " + inputFilename + ", output file: " + outputFilename);
-
     String inputJson = Files.readString(Paths.get(inputFilename));
-    System.out.println(inputJson);
+
     JsonFormat.Parser parser = JsonFormat.parser();
     Git.GitResult.Builder gitResultBuilder = Git.GitResult.newBuilder();
     parser.merge(inputJson, gitResultBuilder);

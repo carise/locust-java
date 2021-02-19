@@ -1,9 +1,10 @@
 package locust;
 
+/** Describes what has changed within the source tree. */
 final class ChangeScope {
-  private final String idNodeName;
-  private final int startLine;
-  private final int endLine;
+  final String idNodeName;
+  final int startLine;
+  final int endLine;
   // TODO: symbols? https://github.com/bugout-dev/locust/blob/main/locust/parse.py#L44
 
   ChangeScope(String idNodeName, int startLine, int endLine) {

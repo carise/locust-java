@@ -37,6 +37,7 @@
             <artifactId>javaparser-symbol-solver-core</artifactId>
             <version>${javaparser.version}</version>
         </dependency>
+
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
@@ -65,20 +66,6 @@
                 <version>2.5.2</version>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>3.0.0</version>
-                <configuration>
-                    <mainClass>locust.LocustMain</mainClass>
-                    <arguments>
-                        <argument>-i</argument>
-                        <argument>./sample/git_java.json</argument>
-                        <argument>-o</argument>
-                        <argument>./sample/out.json</argument>
-                    </arguments>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.2.4</version>
@@ -90,7 +77,8 @@
                         </goals>
                         <configuration>
                             <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>locust.LocustMain</mainClass>
                                 </transformer>
                             </transformers>
