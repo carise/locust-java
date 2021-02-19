@@ -8,8 +8,9 @@ mvn package
 java -jar target/locust-java-1.0-SNAPSHOT.jar -i sample/git_java.json -o out.json 
 ```
 
-Run with `locust`
+Run with `locust` and [locust test cases](https://github.com/bugout-dev/locust-test-cases)
 ```shell
+cd locust-test-cases
 locust -r . 407a161 7943ac3 --plugins "java -jar ../locust-java/target/locust-java-1.0-SNAPSHOT.jar" | jq     
 {
   "locust": [
