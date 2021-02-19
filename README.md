@@ -5,7 +5,11 @@
 Build and run with the sample code
 ```shell
 mvn package
-java -jar target/locust-java-1.0-SNAPSHOT.jar -i sample/git_java.json -o out.json 
+java -jar target/locust-java-1.0-SNAPSHOT.jar -i sample/git_java.json -o out.json | jq
+
+# or
+
+java -jar target/locust-java-1.0-SNAPSHOT.jar -i sample/test_java_git.json -o out.json | jq
 ```
 
 Run with `locust` and [locust test cases](https://github.com/bugout-dev/locust-test-cases)

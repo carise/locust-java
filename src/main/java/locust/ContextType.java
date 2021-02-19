@@ -1,5 +1,6 @@
 package locust;
 
+/** The context type in the AST */
 enum ContextType {
   UNKNOWN("unknown"),
   CLASS_DEF("class"),

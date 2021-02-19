@@ -9,8 +9,6 @@ import locust.git.Git;
 import locust.parse.Parse;
 
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,10 +20,6 @@ import java.util.stream.Collectors;
  * Correlate the changes within a git initial/ending ref with the changes' source tree.
  *
  * <p>Locust will report changes correlated to the values of {@link ContextType}.
- *
- * <p>The Javascript plugin calls definitionsByPatch() -> writeOutput().
- *
- * <p>definitionsByPatch() -> definitionsInPatch() -> calculateChanges()
  */
 public final class LocustMain {
 
@@ -68,14 +62,7 @@ public final class LocustMain {
       return List.of();
     }
 
-    CompilationUnit compilationUnit;
-
-    try {
-      compilationUnit = StaticJavaParser.parse(new File(patch.getNewFile()));
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
-      throw new RuntimeException("failed to parse file due to " + e.getMessage());
-    }
+    CompilationUnit compilationUnit = StaticJavaParser.parse(source);
 
     LocustVisitor locustVisitor = new LocustVisitor();
     locustVisitor.visit(compilationUnit, null);

@@ -30,42 +30,39 @@ final class LocustVisitor extends VoidVisitorAdapter<Void> {
     return definitions;
   }
 
-  List<ChangeScope> getScope() {
-    return scope;
-  }
-
   @Override
   public void visit(ImportDeclaration importDecl, Void state) {
-    super.visit(importDecl, state);
     processDeclaration(importDecl, importDecl.getNameAsString(), ContextType.DEPENDENCY);
+    super.visit(importDecl, state);
   }
 
   @Override
   public void visit(ClassOrInterfaceDeclaration classInterfaceDecl, Void state) {
-    super.visit(classInterfaceDecl, state);
+
     processDeclaration(
         classInterfaceDecl,
         classInterfaceDecl.getNameAsString(),
         classInterfaceDecl.isInterface() ? ContextType.INTERFACE_DEF : ContextType.CLASS_DEF);
+    super.visit(classInterfaceDecl, state);
   }
 
   @Override
   public void visit(ConstructorDeclaration constructorDecl, Void state) {
-    super.visit(constructorDecl, state);
     processDeclaration(
         constructorDecl, constructorDecl.getNameAsString(), ContextType.CONSTRUCTOR_DEF);
+    super.visit(constructorDecl, state);
   }
 
   @Override
   public void visit(MethodDeclaration methodDecl, Void state) {
-    super.visit(methodDecl, state);
     processDeclaration(methodDecl, methodDecl.getNameAsString(), ContextType.METHOD_DEF);
+    super.visit(methodDecl, state);
   }
 
   @Override
   public void visit(EnumDeclaration enumDecl, Void state) {
-    super.visit(enumDecl, state);
     processDeclaration(enumDecl, enumDecl.getNameAsString(), ContextType.ENUM_DEF);
+    super.visit(enumDecl, state);
   }
 
   void processDeclaration(Node node, String nodeName, ContextType changeType) {
@@ -74,6 +71,7 @@ final class LocustVisitor extends VoidVisitorAdapter<Void> {
     // deduce parent
     scope =
         scope.stream().filter(s -> s.endLine > nodeRange.begin.line).collect(Collectors.toList());
+
     Optional<Parse.DefinitionParent> defParent = Optional.empty();
     if (!scope.isEmpty()) {
       ChangeScope changeScopeParent = scope.get(scope.size() - 1);
@@ -96,9 +94,13 @@ final class LocustVisitor extends VoidVisitorAdapter<Void> {
             .setLine(nodeRange.begin.line)
             .setOffset(nodeRange.begin.column)
             .setEndLine(nodeRange.end.line)
-            .setEndOffset(nodeRange.end.column);
-    defParent.ifPresent(p -> def.setParent(p));
+            .setEndOffset(nodeRange.end.column)
+            .setParent(
+                defParent.isEmpty()
+                    ? Parse.DefinitionParent.getDefaultInstance()
+                    : defParent.get());
 
     definitions.add(def.build());
+    scope.add(new ChangeScope(nodeName, nodeRange.begin.line, nodeRange.end.line));
   }
 }
