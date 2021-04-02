@@ -1,0 +1,38 @@
+{
+  "definitions": [
+    {
+      "name": "MultipleMethods",
+      "changeType": "class",
+      "line": 1,
+      "offset": 1,
+      "endLine": 9,
+      "endOffset": 1,
+      "parent": {
+      }
+    },
+    {
+      "name": "MultipleMethods.main",
+      "changeType": "method",
+      "line": 2,
+      "offset": 3,
+      "endLine": 4,
+      "endOffset": 3,
+      "parent": {
+        "name": "MultipleMethods",
+        "line": 1
+      }
+    },
+    {
+      "name": "MultipleMethods.helloWorld",
+      "changeType": "method",
+      "line": 6,
+      "offset": 3,
+      "endLine": 8,
+      "endOffset": 3,
+      "parent": {
+        "name": "MultipleMethods",
+        "line": 1
+      }
+    }
+  ]
+}

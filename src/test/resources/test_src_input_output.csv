@@ -1,0 +1,3 @@
+"input","output"
+"src/test/resources/test_input/Simple.java","src/test/resources/test_output/simple.json"
+"src/test/resources/test_input/MultipleMethods.java","src/test/resources/test_output/multiple_methods.json"
