@@ -38,7 +38,6 @@ final class LocustVisitor extends VoidVisitorAdapter<Void> {
 
   @Override
   public void visit(ClassOrInterfaceDeclaration classInterfaceDecl, Void state) {
-
     processDeclaration(
         classInterfaceDecl,
         classInterfaceDecl.getNameAsString(),
@@ -103,4 +102,6 @@ final class LocustVisitor extends VoidVisitorAdapter<Void> {
     definitions.add(def.build());
     scope.add(new ChangeScope(nodeName, nodeRange.begin.line, nodeRange.end.line));
   }
+
+  private final record ChangeScope(String idNodeName, int startLine, int endLine) {}
 }

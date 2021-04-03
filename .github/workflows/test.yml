@@ -1,0 +1,21 @@
+name: Locust-java tests
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  test:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          repository: bugout-dev/locust-test-cases
+          path: locust-test-cases
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 14
+      - name: Build and run unit tests for locust-java
+        run: mvn package

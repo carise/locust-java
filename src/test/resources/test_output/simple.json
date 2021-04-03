@@ -1,0 +1,26 @@
+{
+  "definitions": [
+    {
+      "name": "Simple",
+      "changeType": "class",
+      "line": 1,
+      "offset": 1,
+      "endLine": 5,
+      "endOffset": 1,
+      "parent": {
+      }
+    },
+    {
+      "name": "Simple.main",
+      "changeType": "method",
+      "line": 2,
+      "offset": 3,
+      "endLine": 4,
+      "endOffset": 3,
+      "parent": {
+        "name": "Simple",
+        "line": 1
+      }
+    }
+  ]
+}
