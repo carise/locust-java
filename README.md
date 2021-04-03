@@ -1,6 +1,9 @@
 # locust-java
 
-Build and run with the sample code
+Java plugin for [locust](https://github.com/bugout-dev/locust)
+
+## Build and run with the sample code
+
 ```shell
 mvn package
 java --enable-preview -jar target/locust-java-1.0-SNAPSHOT.jar -i sample/hello_java.json | jq
@@ -10,7 +13,10 @@ java --enable-preview -jar target/locust-java-1.0-SNAPSHOT.jar -i sample/hello_j
 java --enable-preview -jar target/locust-java-1.0-SNAPSHOT.jar -i sample/hello_java2.json | jq
 ```
 
-Run with `locust` and [locust test cases](https://github.com/bugout-dev/locust-test-cases)
+## Run with `locust`
+
+Using the [locust test cases](https://github.com/bugout-dev/locust-test-cases):
+
 ```shell
 cd locust-test-cases
 # the revisions are test_java_initial and test_java_terminal
